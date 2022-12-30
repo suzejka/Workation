@@ -19,6 +19,7 @@ from keras.models import Sequential
 from keras.layers import Dense
 from keras.layers import Dropout
 from sklearn.preprocessing import LabelEncoder
+import streamlit as st
 
 def remove_null(data):
     data.dropna(inplace=True)
@@ -74,3 +75,4 @@ X_test = test.iloc[:, 1:13].values
 y_pred = network.predict(X_test)
 print(y_pred)
 
+st.markdown("Przewidywanie ceny wakacji")
