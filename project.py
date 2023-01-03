@@ -19,6 +19,7 @@ from keras.models import Sequential
 from keras.layers import Dense
 from keras.layers import Dropout
 from sklearn.preprocessing import LabelEncoder
+from sklearn.linear_model import LinearRegression
 import streamlit as st
 
 def remove_null(data):
@@ -56,23 +57,27 @@ def build_neural_network_for_regression():
     network.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
     return network
 
-train = pd.read_csv('dataset\\Train.csv')
-test = pd.read_csv('dataset\\Test.csv')
+def build_linear_regression(X_train, y_train):
+    classifier = LinearRegression()
+    classifier.fit(X_train, y_train)
+    return classifier
+
+train = pd.read_csv('dataset\Train.csv')
+validation = pd.read_csv('dataset\Test.csv')
+
+data_preprocessing(train)
+data_preprocessing(validation)
 
 X = train.iloc[:, 0:13].values
 y = train.iloc[:, 13].values
 
-data_preprocessing(train)
-data_preprocessing(test)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=0)
 
-network = build_neural_network_for_regression()
+regression = build_linear_regression(X, y)
 
-print(train.info())
+y_pred = regression.predict(X_test)
 
-network.fit(X, y, batch_size = 10, epochs = 100)
-
-X_test = test.iloc[:, 1:13].values
-y_pred = network.predict(X_test)
-print(y_pred)
+accuracy = regression.score(X_test, y_test)
+print(accuracy)
 
 st.markdown("Przewidywanie ceny wakacji")
