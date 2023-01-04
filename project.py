@@ -21,6 +21,7 @@ from keras.layers import Dropout
 from sklearn.preprocessing import LabelEncoder
 from sklearn.linear_model import LinearRegression
 import streamlit as st
+from pycaret.regression import *
 
 def remove_null(data):
     data.dropna(inplace=True)
@@ -62,8 +63,14 @@ def build_linear_regression(X_train, y_train):
     classifier.fit(X_train, y_train)
     return classifier
 
-train = pd.read_csv('dataset\Train.csv')
-validation = pd.read_csv('dataset\Test.csv')
+def find_best_model():
+    rgs1 = setup(data = train, target = "Per Person Price")
+    best_regression_models = compare_models(sort='Accuracy')
+    regression_results = pull()
+    return regression_results
+
+train = pd.read_csv('Workation\dataset\Train.csv')
+validation = pd.read_csv('Workation\dataset\Test.csv')
 
 data_preprocessing(train)
 data_preprocessing(validation)
@@ -73,11 +80,11 @@ y = train.iloc[:, 13].values
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=0)
 
-regression = build_linear_regression(X, y)
+#regression = build_linear_regression(X, y)
+#y_pred = regression.predict(X_test)
+#accuracy = regression.score(X_test, y_test)
+#print(accuracy)
 
-y_pred = regression.predict(X_test)
-
-accuracy = regression.score(X_test, y_test)
-print(accuracy)
+print(find_best_model())
 
 st.markdown("Przewidywanie ceny wakacji")
