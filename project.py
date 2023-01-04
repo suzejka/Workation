@@ -1,27 +1,11 @@
 import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler
-from sklearn.metrics import confusion_matrix
-from sklearn.metrics import accuracy_score
-from sklearn.metrics import classification_report
-from sklearn.metrics import roc_curve
-from sklearn.metrics import roc_auc_score
-from sklearn.metrics import precision_recall_curve
-from sklearn.metrics import f1_score
-from sklearn.metrics import auc
-from sklearn.metrics import average_precision_score
-from sklearn.metrics import precision_recall_fscore_support
-from sklearn.metrics import precision_score
-from sklearn.metrics import recall_score
-from tensorflow import keras
-from keras.models import Sequential
-from keras.layers import Dense
-from keras.layers import Dropout
 from sklearn.preprocessing import LabelEncoder
-from sklearn.linear_model import LinearRegression
 import streamlit as st
 from pycaret.regression import *
+
+LABEL_ENCODER = None
 
 def remove_null(data):
     data.dropna(inplace=True)
@@ -32,11 +16,16 @@ def convert_dates_to_one_format(data):
     data['Travel Date'] = data['Travel Date'].dt.strftime('%Y-%m-%d')
     return data
 
+def replace_space_with_underscore(name):
+    return name.replace(' ', '_')
+
 def create_label_encoding(data):
+    global LABEL_ENCODER
     cat_cols = data.select_dtypes(include=['object']).columns
-    le = LabelEncoder()
+    LABEL_ENCODER = LabelEncoder()
     for col in cat_cols:
-        data[col] = le.fit_transform(data[col])
+        data[col] = LABEL_ENCODER.fit_transform(data[col])
+        np.save('classes_{0}.npy'.format(replace_space_with_underscore(col)), LABEL_ENCODER.classes_, allow_pickle=True)
 
 def change_int32_to_int64(data):
     for col in data.columns:
@@ -50,19 +39,6 @@ def data_preprocessing(data):
     convert_dates_to_one_format(data)
     create_label_encoding(data)
 
-def build_neural_network_for_regression():
-    network = Sequential()
-    network.add(Dense(units=6, kernel_initializer='uniform', activation='relu', input_dim=13))
-    network.add(Dense(units=6, kernel_initializer='uniform', activation='relu'))
-    network.add(Dense(units=1, kernel_initializer='uniform', activation='sigmoid'))
-    network.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
-    return network
-
-def build_linear_regression(X_train, y_train):
-    classifier = LinearRegression()
-    classifier.fit(X_train, y_train)
-    return classifier
-
 def find_best_models():
     rgs1 = setup(data = train, target = "Per Person Price")
     best_regression_models = compare_models()
@@ -72,15 +48,11 @@ def create_best_model():
     best_model = create_model('rf') #random forest chosen from find_best_model()
     return best_model
 
-train = pd.read_csv('Workation\dataset\Train.csv')
-validation = pd.read_csv('Workation\dataset\Test.csv')
+train = pd.read_csv('dataset\Train.csv')
+validation = pd.read_csv('dataset\Test.csv')
 
 data_preprocessing(train)
 data_preprocessing(validation)
-
-#X = train.iloc[:, 0:13].values
-#y = train.iloc[:, 13].values
-#X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=0)
 
 best = find_best_models()
 results = pull()
@@ -89,6 +61,5 @@ print(results) #printing table of best models
 print(best) #printing best model found
 #evaluate_model(best) #only works in notebook
 
-save_model(best, 'Workation/random_forest_model') #saves best model as pickle file
+save_model(best, 'random_forest_model') #saves best model as pickle file
 
-st.markdown("Przewidywanie ceny wakacji")
