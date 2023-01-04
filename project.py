@@ -65,7 +65,7 @@ def build_linear_regression(X_train, y_train):
 
 def find_best_model():
     rgs1 = setup(data = train, target = "Per Person Price")
-    best_regression_models = compare_models(sort='Accuracy')
+    best_regression_models = compare_models()
     regression_results = pull()
     return regression_results
 
