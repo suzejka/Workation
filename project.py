@@ -63,11 +63,14 @@ def build_linear_regression(X_train, y_train):
     classifier.fit(X_train, y_train)
     return classifier
 
-def find_best_model():
+def find_best_models():
     rgs1 = setup(data = train, target = "Per Person Price")
     best_regression_models = compare_models()
-    regression_results = pull()
-    return regression_results
+    return best_regression_models
+
+def create_best_model():
+    best_model = create_model('rf') #random forest chosen from find_best_model()
+    return best_model
 
 train = pd.read_csv('Workation\dataset\Train.csv')
 validation = pd.read_csv('Workation\dataset\Test.csv')
@@ -75,16 +78,17 @@ validation = pd.read_csv('Workation\dataset\Test.csv')
 data_preprocessing(train)
 data_preprocessing(validation)
 
-X = train.iloc[:, 0:13].values
-y = train.iloc[:, 13].values
+#X = train.iloc[:, 0:13].values
+#y = train.iloc[:, 13].values
+#X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=0)
 
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=0)
+best = find_best_models()
+results = pull()
+print(results) #printing table of best models
 
-#regression = build_linear_regression(X, y)
-#y_pred = regression.predict(X_test)
-#accuracy = regression.score(X_test, y_test)
-#print(accuracy)
+print(best) #printing best model found
+#evaluate_model(best) #only works in notebook
 
-print(find_best_model())
+save_model(best, 'Workation/random_forest_model') #saves best model as pickle file
 
 st.markdown("Przewidywanie ceny wakacji")
