@@ -40,7 +40,7 @@ def data_preprocessing(data):
     create_label_encoding(data)
 
 def find_best_models():
-    rgs1 = setup(data = train, target = "Per Person Price")
+    rgs1 = setup(data = train, target = "Per Person Price", silent=True)
     best_regression_models = compare_models()
     return best_regression_models
 
