@@ -3,7 +3,6 @@ This app will predict the price per person for your next Workstation trip with t
 
 ## Team
 - Zuzanna Stasiak
-- Błażej Kozieł
 - Karol Bagniuk
 - Grzegorz Święcicki
 
