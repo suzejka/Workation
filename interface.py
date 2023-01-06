@@ -6,12 +6,12 @@ from hotels import hotels
 from places_covered import places_covered
 from sightseeing_places import sightseeing_places
 
-encoders = {}
+st.image("https://www.greenpearls.com/wp-content/uploads/2018/09/puri-dajuma-eco-resort-bali.png")
+col1, col2 = st.columns([1,2])
+col1.title("Holiday price prediction")
+col2.header("Enter your holiday details")
 
-st.title("Holiday price prediction")
-st.markdown("Enter your holiday details")
-
-form = st.form(key='my_form')
+form = col2.form(key='my_form')
 
 package_type = form.selectbox('Package Type', ('Standard', 'Deluxe', 'Premium','Luxury', 'Budget'))
 places_covered = form.multiselect('Places Covered', places_covered)
@@ -26,6 +26,7 @@ sightseeing_places_covered = form.selectbox('Sightseeing Places Covered', sights
 
 submit_button = form.form_submit_button(label='Send')
 
+encoders = {}
 for col in ['Package Name', 'Package Type', 'Destination', 'Itinerary', 'Places Covered', 'Travel Date', 'Hotel Details', 'Start City', 'Airline', 'Sightseeing Places Covered', 'Cancellation Rules']:
     encoder = LabelEncoder()
     encoder.classes_ = np.load('classes_{0}.npy'.format(col.replace(' ', '_')), allow_pickle=True)
