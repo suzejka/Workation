@@ -15,7 +15,7 @@ form = st.form(key='my_form')
 
 package_type = form.selectbox('Package Type', ('Standard', 'Deluxe', 'Premium','Luxury', 'Budget'))
 places_covered = form.multiselect('Places Covered', places_covered)
-form.slider('Itinerary', 1,4)
+itinerary = form.slider('Itinerary', 1,4)
 travel_date = form.date_input(label='Travel Date')
 hotel_details = form.multiselect('Hotel Details', hotels)
 start_city = form.selectbox('Start City', ('Mumbai', 'New Delhi') )
