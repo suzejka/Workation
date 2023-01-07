@@ -51,9 +51,6 @@ coverage.xml
 .hypothesis/
 .pytest_cache/
 
-# Models
-random_forest_model.pkl
-
 # Translations
 *.mo
 *.pot
