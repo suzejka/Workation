@@ -11,20 +11,23 @@ col1, col2 = st.columns([1,2])
 col1.title("Holiday price prediction")
 col2.header("Enter your holiday details")
 
-form = col2.form(key='my_form')
+package_type = st.selectbox('Package Type', ('Standard', 'Deluxe', 'Premium','Luxury', 'Budget'))
+places_covered = st.multiselect('Places Covered', places_covered)
 
-package_type = form.selectbox('Package Type', ('Standard', 'Deluxe', 'Premium','Luxury', 'Budget'))
-places_covered = form.multiselect('Places Covered', places_covered)
-itinerary = form.slider('Itinerary', 1,4)
-travel_date = form.date_input(label='Travel Date')
-hotel_details = form.multiselect('Hotel Details', hotels)
-start_city = form.selectbox('Start City', ('Mumbai', 'New Delhi') )
-airline = form.selectbox('Airline', airlines)
-flight_stops = form.slider('Flight Stops', 0, 2)
-meals = form.slider('Meals', 2, 5)
-sightseeing_places_covered = form.selectbox('Sightseeing Places Covered', sightseeing_places)
+itinerary = {}
 
-submit_button = form.form_submit_button(label='Send')
+for place in places_covered:
+    itinerary[place] = st.slider('Itinerary {0}'.format(place), 1,4)
+
+travel_date = st.date_input(label='Travel Date')
+hotel_details = st.multiselect('Hotel Details', hotels)
+start_city = st.selectbox('Start City', ('Mumbai', 'New Delhi') )
+airline = st.selectbox('Airline', airlines)
+flight_stops = st.slider('Flight Stops', 0, 2)
+meals = st.slider('Meals', 2, 5)
+sightseeing_places_covered = st.selectbox('Sightseeing Places Covered', sightseeing_places)
+
+submit_button = st.button(label='Send')
 
 encoders = {}
 for col in ['Package Name', 'Package Type', 'Destination', 'Itinerary', 'Places Covered', 'Travel Date', 'Hotel Details', 'Start City', 'Airline', 'Sightseeing Places Covered', 'Cancellation Rules']:
