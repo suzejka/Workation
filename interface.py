@@ -55,7 +55,7 @@ for col in ['Package Type', 'Start City']:
     encoders[col] = encoder
 
 if submit_button:
-    st.write(encoders['Package Type'].transform([package]))
+    # st.write(encoders['Package Type'].transform([package]))
     st.write(encoders['Places Covered'].transform([places_covered]))
     st.write(encoders['Itinerary'].transform([itinerary]))
     st.write()
