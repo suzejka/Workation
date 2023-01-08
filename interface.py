@@ -1,11 +1,14 @@
 import streamlit as st
 import numpy as np
+import pandas as pd
 from sklearn.preprocessing import MultiLabelBinarizer, OneHotEncoder
 from airlines import airlines
 from hotels import hotels
 from places_covered import places_covered
 from sightseeing_places import sightseeing_places
 import pickle
+import warnings 
+warnings.filterwarnings("ignore")
 
 st.image("https://www.greenpearls.com/wp-content/uploads/2018/09/puri-dajuma-eco-resort-bali.png")
 col1, col2 = st.columns([1,2])
@@ -47,7 +50,7 @@ for col in ['Itinerary', 'Sightseeing Places Covered', 'Places Covered', 'Hotel 
     labels = np.expand_dims(labels, axis=1)
     encoder.fit(labels)
     encoders[col] = encoder
-    
+
 for col in ['Package Type', 'Start City']:
     encoder = OneHotEncoder()
     labels = np.load('encoder_{0}.npy'.format(col.replace(' ', '_')), allow_pickle=True)
@@ -55,22 +58,33 @@ for col in ['Package Type', 'Start City']:
     encoders[col] = encoder
 
 if submit_button:
-    # st.write(encoders['Package Type'].transform([package]))
-    st.write(encoders['Places Covered'].transform([places_covered]))
-    st.write(encoders['Itinerary'].transform([itinerary]))
-    st.write()
-    st.write(encoders['Hotel Details'].transform([hotel_details]))
-    # st.write(encoders['Start City'].transform([start_city]))
-    st.write(encoders['Airline'].transform([airline]))
-    st.write()
-    st.write()
-    st.write(encoders['Sightseeing Places Covered'].transform([sightseeing_places_covered]))
+    # package = encoders['Package Type'].transform([package])
+    package = "Standard"
+    places_covered = encoders['Places Covered'].transform([places_covered])
+    itinerary = encoders['Itinerary'].transform([itinerary])
+    hotel_details = encoders['Hotel Details'].transform([hotel_details])
+    # start_city = encoders['Start City'].transform([start_city])
+    start_city = "Mumbai"
+    airline = encoders['Airline'].transform([airline])
+    sightseeing_places_covered = encoders['Sightseeing Places Covered'].transform([sightseeing_places_covered])
 
-    #read pickle model
+    userData = {'Package Type': package,
+                'Places Covered': places_covered,
+                'Itinerary': itinerary,
+                'Travel Date': travel_date,
+                'Hotel Details': hotel_details,
+                'Start City': start_city,
+                'Airline': airline,
+                'Flight Stops': flight_stops,
+                'Meals': meals,
+                'Sightseeing Places Covered': sightseeing_places_covered}
+
+    userDataFrame = pd.DataFrame.from_dict([userData])
+
     model = pickle.load(open('models\\ridge_model.pkl', 'rb'))
+    
+    print(type( model)) # returns <class 'numpy.ndarray'>
 
-    #predict
+    prediction = model.predict(userDataFrame)
 
-    model.predict()
-
-    st.write("The price of the holiday is PLN 1,000")
+    st.write(f"The price of the holiday is PLN {prediction[0]:.2f}")
