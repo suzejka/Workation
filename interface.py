@@ -20,7 +20,7 @@ def set_one_if_value_in_columns(df, columns, value):
                 df[col] = 0
 
 def read_file_and_get_df(column):
-    df = pd.read_csv('classes_{0}.csv'.format(column.replace(' ', '_')))
+    df = pd.read_csv('encoders\\classes_{0}.csv'.format(column.replace(' ', '_')))
     list = df[column].tolist()
     return pd.DataFrame(columns=list)
 
@@ -60,12 +60,12 @@ submit_button = st.button(label='Send')
 encoders = {}
 
 for col in ['Itinerary', 'Sightseeing Places Covered', 'Places Covered', 'Hotel Details',  'Airline']:
-    encoder = load('encoder_{0}.joblib'.format(col.replace(' ', '_')))
+    encoder = load('encoders\\encoder_{0}.joblib'.format(col.replace(' ', '_')))
     encoders[col] = encoder
 
 for col in ['Package Type', 'Start City']:
     encoder = LabelEncoder()
-    labels = np.load('encoder_{0}.npy'.format(col.replace(' ', '_')), allow_pickle=True)
+    labels = np.load('encoders\\encoder_{0}.npy'.format(col.replace(' ', '_')), allow_pickle=True)
     encoder.fit(labels)
     encoders[col] = encoder
 
@@ -129,10 +129,9 @@ if submit_button:
 
     # userDataFrame = pd.DataFrame.from_dict([userData])
 
-    
-
     model = pickle.load(open('models\\best_model.sv', 'rb'))
 
     prediction = model.predict(userData)
 
     st.write(f"The price of the holiday is PLN {prediction[0]:.2f}")
+    
