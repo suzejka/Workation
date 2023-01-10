@@ -11,6 +11,19 @@ from joblib import dump, load
 import warnings
 warnings.filterwarnings("ignore")
 
+def set_one_if_value_in_columns(df, columns, value):
+    for col in columns:
+        if col == value:
+            df[col] = 1
+        else:
+            if col not in df.columns:
+                df[col] = 0
+
+def read_file_and_get_df(column):
+    df = pd.read_csv('classes_{0}.csv'.format(column.replace(' ', '_')))
+    list = df[column].tolist()
+    return pd.DataFrame(columns=list)
+
 st.image("https://www.greenpearls.com/wp-content/uploads/2018/09/puri-dajuma-eco-resort-bali.png")
 col1, col2 = st.columns([1,2])
 st.title("Holiday price prediction")
@@ -20,11 +33,11 @@ package_type = st.selectbox('Package Type', ('Standard', 'Deluxe', 'Premium','Lu
 
 package = package_type
 
-places_covered = st.multiselect('Places Covered', places_covered)
+places_covered_selected = st.multiselect('Places Covered', places_covered)
 
 itinerary = {
     place: st.slider('Itinerary {0}'.format(place), 1, 4)
-    for place in places_covered
+    for place in places_covered_selected
 }
 
 travel_date = st.date_input(label='Travel Date')
@@ -56,44 +69,70 @@ for col in ['Package Type', 'Start City']:
     encoder.fit(labels)
     encoders[col] = encoder
 
-
 if submit_button:
 
     package = encoders['Package Type'].transform([package])
 
-    places_covered = encoders['Places Covered'].transform([places_covered])
-
-    itinerary = encoders['Itinerary'].transform([itinerary])
-
     travel_date = pd.to_datetime(travel_date, errors='coerce')
-    travel_date = travel_date.timestamp()    
-
-    hotel_details = encoders['Hotel Details'].transform([hotel_details])
+    travel_date = travel_date.timestamp()
 
     start_city = encoders['Start City'].transform([start_city])
 
-    airline = encoders['Airline'].transform([airline])
+    userData = pd.DataFrame()
 
-    sightseeing_places_covered = encoders['Sightseeing Places Covered'].transform([sightseeing_places_covered])
+    userData['Package Type'] = package
 
-    userData = {'Package Type': package,
-                'Places Covered': places_covered,
-                'Itinerary': itinerary,
-                'Travel Date': travel_date,
-                'Hotel Details': hotel_details,
-                'Start City': start_city,
-                'Airline': airline,
-                'Flight Stops': flight_stops,
-                'Meals': meals,
-                'Sightseeing Places Covered': sightseeing_places_covered}
+    userData['Travel Date'] = travel_date
+
+    userData['Start City'] = start_city
+
+    userData['Flight Stops'] = flight_stops
+
+    userData['Meals'] = meals
+
+    places_covered_df = pd.DataFrame(columns=places_covered)
+    itinerary_df = read_file_and_get_df('Itinerary')
+    hotels = [hotel.lower() for hotel in hotels]
+    hotel_details_df = pd.DataFrame(columns=hotels)
+    airline_df = pd.DataFrame(columns=airlines)
+    sightseeing_places_covered_df = pd.DataFrame(columns=sightseeing_places)
+    
+    for i in itinerary:
+        set_one_if_value_in_columns(userData, itinerary_df.columns, i)
+
+    for place in places_covered_selected:
+        set_one_if_value_in_columns(userData, places_covered_df.columns, place)  
+        
+    set_one_if_value_in_columns(userData, airline_df.columns, airline)
+
+    for hotel in hotel_details:
+        set_one_if_value_in_columns(userData, hotel_details_df.columns, hotel)
+
+    for place in sightseeing_places_covered:
+        set_one_if_value_in_columns(userData, sightseeing_places_covered_df.columns, place)
+            
+    st.dataframe(userData)
+
+    userData.to_csv('userData.csv', index=False)
+
+    # userData = {'Package Type': package,
+    #             'Places Covered': places_covered,
+    #             'Itinerary': itinerary,
+    #             'Travel Date': travel_date,
+    #             'Hotel Details': hotel_details,
+    #             'Start City': start_city,
+    #             'Airline': airline,
+    #             'Flight Stops': flight_stops,
+    #             'Meals': meals,
+    #             'Sightseeing Places Covered': sightseeing_places_covered}
 
 
-    userDataFrame = pd.DataFrame.from_dict([userData])
+    # userDataFrame = pd.DataFrame.from_dict([userData])
 
-    st.write(userDataFrame)
+    
 
     model = pickle.load(open('models\\best_model.sv', 'rb'))
 
-    prediction = model.predict(userDataFrame)
+    prediction = model.predict(userData)
 
-    # st.write(f"The price of the holiday is PLN {prediction[0]:.2f}")
+    st.write(f"The price of the holiday is PLN {prediction[0]:.2f}")
