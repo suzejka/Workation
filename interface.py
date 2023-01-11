@@ -9,7 +9,11 @@ from sightseeing_places import sightseeing_places
 import pickle
 from joblib import dump, load
 import warnings
+from pycaret.regression import *
 warnings.filterwarnings("ignore")
+import os
+file_path = os.path.abspath("")
+
 
 def set_one_if_value_in_columns(df, columns, value):
     for col in columns:
@@ -102,18 +106,18 @@ if submit_button:
 
     for place in places_covered_selected:
         set_one_if_value_in_columns(userData, places_covered_df.columns, place)  
-        
-    set_one_if_value_in_columns(userData, airline_df.columns, airline)
 
     for hotel in hotel_details:
         set_one_if_value_in_columns(userData, hotel_details_df.columns, hotel)
+        
+    set_one_if_value_in_columns(userData, airline_df.columns, airline)
 
     for place in sightseeing_places_covered:
         set_one_if_value_in_columns(userData, sightseeing_places_covered_df.columns, place)
             
-    st.dataframe(userData)
+    # st.dataframe(userData)
 
-    userData.to_csv('userData.csv', index=False)
+    # userData.to_csv('userData.csv', index=False)
 
     # userData = {'Package Type': package,
     #             'Places Covered': places_covered,
@@ -129,7 +133,13 @@ if submit_button:
 
     # userDataFrame = pd.DataFrame.from_dict([userData])
 
-    model = pickle.load(open('models\\best_model.sv', 'rb'))
+    # model = pickle.load(open('models\\best_model.sv', 'rb'))
+
+    #get info about models input data
+
+    # model.get_booster().feature_names
+
+    model = load_model('models\\best_model.sv')
 
     prediction = model.predict(userData)
 
