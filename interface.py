@@ -63,12 +63,14 @@ submit_button = st.button(label='Send')
 encoders = {}
 
 for col in ['Itinerary', 'Sightseeing Places Covered', 'Places Covered', 'Hotel Details',  'Airline']:
-    encoder = load('encoders\\encoder_{0}.joblib'.format(col.replace(' ', '_')))
+    encoder_path = os.path.sep.join(['encoders', 'encoder_{0}.joblib'.format(col.replace(' ', '_'))])
+    encoder = load(encoder_path)
     encoders[col] = encoder
 
 for col in ['Package Type', 'Start City']:
     encoder = LabelEncoder()
-    labels = np.load('encoders\\encoder_{0}.npy'.format(col.replace(' ', '_')), allow_pickle=True)
+    encoder_path = os.path.sep.join(['encoders', 'encoder_{0}.npy'.format(col.replace(' ', '_'))])
+    labels = np.load(encoder_path, allow_pickle=True)
     encoder.fit(labels)
     encoders[col] = encoder
 

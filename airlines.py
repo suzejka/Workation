@@ -1,5 +1,7 @@
 import pandas as pd
+import os
 
-df = pd.read_csv('encoders\\classes_Airline.csv')
+file_path = os.path.sep.join(['encoders', 'classes_Airline.csv'])
+df = pd.read_csv(file_path)
 
 airlines = df['Airline'].tolist()

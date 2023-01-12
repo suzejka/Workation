@@ -1,5 +1,6 @@
 import pandas as pd
-
-df = pd.read_csv('encoders\\classes_Sightseeing_Places_Covered.csv')
+import os
+file_path = os.path.sep.join(['encoders', 'classes_Sightseeing_Places_Covered.csv'])
+df = pd.read_csv(file_path)
 
 sightseeing_places = df['Sightseeing Places Covered'].tolist()
