@@ -139,7 +139,8 @@ if submit_button:
 
     # model.get_booster().feature_names
 
-    model = load_model('models\\best_model.sv')
+    #model = load_model('models\\best_model.sv')
+    model = load_model('models\\best_model_only.pkl') #tutaj wchodzi sam model, jak to nie pójdzie to spróbuj z "best_model_pipeline.pkl"
 
     prediction = model.predict(userData)
 
