@@ -23,7 +23,8 @@ def set_one_if_value_in_columns(df, columns, value):
                 df[col] = 0
 
 def read_file_and_get_df(column):
-    df = pd.read_csv('encoders\\classes_{0}.csv'.format(column.replace(' ', '_')))
+    file_path = os.path.sep.join(['encoders', 'classes_{0}.csv'.format(column.replace(' ', '_'))])
+    df = pd.read_csv(file_path)
     list = df[column].tolist()
     return pd.DataFrame(columns=list)
 
@@ -45,6 +46,7 @@ itinerary = {
 
 travel_date = st.date_input(label='Travel Date')
 
+hotels = [hotel.capitalize() for hotel in hotels]
 hotel_details = st.multiselect('Hotel Details', hotels)
 hotel_details = [hotel.lower() for hotel in hotel_details]
 
