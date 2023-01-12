@@ -77,6 +77,20 @@ for col in ['Package Type', 'Start City']:
     encoders[col] = encoder
 
 if submit_button:
+    not_ready_to_submit = False
+
+    if len(places_covered_selected) == 0:
+        st.error("Please select Places Covered option")
+        not_ready_to_submit = True
+    if len(hotel_details) == 0:
+        st.error("Please select Hotel Details option")
+        not_ready_to_submit = True
+    if len(sightseeing_places_covered) == 0:
+        st.error("Please Sightseeing Places Covered option")
+        not_ready_to_submit = True
+
+    if not_ready_to_submit:
+        st.stop()
 
     package = encoders['Package Type'].transform([package])
 
@@ -117,5 +131,5 @@ if submit_button:
 
     prediction = model.predict(userData)
 
-    st.write(f"The price of the holiday is PLN {prediction[0]:.2f}")
-    
+    st.subheader(f"The price of the holiday is PLN {prediction[0]:.2f}")
+    st.balloons()
