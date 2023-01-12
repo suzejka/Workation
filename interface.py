@@ -1,19 +1,18 @@
 import streamlit as st
 import numpy as np
 import pandas as pd
-from sklearn.preprocessing import MultiLabelBinarizer, OneHotEncoder, LabelEncoder
+from joblib import load
+import warnings
+from pycaret.regression import *
+from sklearn.preprocessing import LabelEncoder
 from airlines import airlines
 from hotels import hotels
 from places_covered import places_covered
 from sightseeing_places import sightseeing_places
-import pickle
-from joblib import dump, load
-import warnings
-from pycaret.regression import *
+
 warnings.filterwarnings("ignore")
 import os
 file_path = os.path.abspath("")
-
 
 def set_one_if_value_in_columns(df, columns, value):
     for col in columns:
@@ -83,15 +82,10 @@ if submit_button:
     start_city = encoders['Start City'].transform([start_city])
 
     userData = pd.DataFrame()
-
     userData['Package Type'] = package
-
     userData['Travel Date'] = travel_date
-
     userData['Start City'] = start_city
-
     userData['Flight Stops'] = flight_stops
-
     userData['Meals'] = meals
 
     places_covered_df = pd.DataFrame(columns=places_covered)
@@ -115,31 +109,6 @@ if submit_button:
     for place in sightseeing_places_covered:
         set_one_if_value_in_columns(userData, sightseeing_places_covered_df.columns, place)
             
-    # st.dataframe(userData)
-
-    # userData.to_csv('userData.csv', index=False)
-
-    # userData = {'Package Type': package,
-    #             'Places Covered': places_covered,
-    #             'Itinerary': itinerary,
-    #             'Travel Date': travel_date,
-    #             'Hotel Details': hotel_details,
-    #             'Start City': start_city,
-    #             'Airline': airline,
-    #             'Flight Stops': flight_stops,
-    #             'Meals': meals,
-    #             'Sightseeing Places Covered': sightseeing_places_covered}
-
-
-    # userDataFrame = pd.DataFrame.from_dict([userData])
-
-    # model = pickle.load(open('models\\best_model.sv', 'rb'))
-
-    #get info about models input data
-
-    # model.get_booster().feature_names
-
-    #model = load_model('models\\best_model.sv')
     model = load_model('models/best_model_pipeline')
 
     prediction = model.predict(userData)
